@@ -1,9 +1,9 @@
-import 'package:first_application/presentation/screens/detail_page.dart';
-import 'package:first_application/presentation/screens/home_page.dart';
-import 'package:first_application/presentation/screens/search_page.dart';
+import 'package:first_application/features/product/presentation/screens/detail_page.dart';
+import 'package:first_application/features/product/presentation/screens/home_page.dart';
+import 'package:first_application/features/product/presentation/screens/search_page.dart';
 import 'package:flutter/material.dart';
 
-import 'presentation/screens/create_product.dart';
+import 'features/product/presentation/screens/create_product.dart';
 
 void main() {
   runApp(const MyApp());
