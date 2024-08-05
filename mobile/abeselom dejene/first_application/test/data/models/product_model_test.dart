@@ -9,7 +9,7 @@ void main() {
       id: "123",
       imageUrl: "https://picsum.photos/250?image=9",
       name: "Gucci Bag",
-      price: 1230.0);
+      price: 1230);
   test(
     'this is model test',
     () async {

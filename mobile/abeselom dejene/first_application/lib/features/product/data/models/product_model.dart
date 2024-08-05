@@ -6,7 +6,7 @@ class ProductModel extends ProductEntity {
     required String name,
     required String description,
     required String imageUrl,
-    required double price,
+    required int price,
   }) : super(
           description: description,
           id: id,
@@ -16,11 +16,11 @@ class ProductModel extends ProductEntity {
         );
 
   factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
-        id: json['name'],
-        name: json['weather'][0]['main'],
-        description: json['weather'][0]['description'],
-        imageUrl: json['weather'][0]['icon'],
-        price: json['main']['temp'],
+        id: json['data'][0]['id'],
+        name: json['data'][0]['name'],
+        description: json['data'][0]['description'],
+        imageUrl: json['data'][0]['imageUrl'],
+        price: json['data'][0]['price'],
       );
 
   Map<String, dynamic> toJson() => {
