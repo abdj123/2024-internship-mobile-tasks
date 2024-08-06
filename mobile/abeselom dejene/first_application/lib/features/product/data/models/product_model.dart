@@ -23,6 +23,13 @@ class ProductModel extends ProductEntity {
         price: json['data'][0]['price'],
       );
 
+  factory ProductModel.forLocalJson(Map<String, dynamic> json) => ProductModel(
+        id: json['id'],
+        name: json['name'],
+        description: json['description'],
+        imageUrl: json['imageUrl'],
+        price: json['price'],
+      );
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,

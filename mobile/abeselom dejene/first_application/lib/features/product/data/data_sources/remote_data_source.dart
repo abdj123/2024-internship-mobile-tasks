@@ -7,7 +7,7 @@ import '../../../../core/error/exception.dart';
 import '../models/product_model.dart';
 
 abstract class ProductRemoteDataSource {
-  Future<ProductModel> getProductById(String cityName);
+  Future<ProductModel> getProductById(String id);
 }
 
 class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
