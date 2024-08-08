@@ -15,12 +15,20 @@ class ProductModel extends ProductEntity {
           price: price,
         );
 
-  factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
+  factory ProductModel.fromJsonData(Map<String, dynamic> json) => ProductModel(
         id: json['data'][0]['id'],
         name: json['data'][0]['name'],
         description: json['data'][0]['description'],
         imageUrl: json['data'][0]['imageUrl'],
         price: json['data'][0]['price'],
+      );
+
+  factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
+        id: json['id'],
+        name: json['name'],
+        description: json['description'],
+        imageUrl: json['imageUrl'],
+        price: json['price'],
       );
 
   factory ProductModel.forLocalJson(Map<String, dynamic> json) => ProductModel(
@@ -34,6 +42,14 @@ class ProductModel extends ProductEntity {
         'id': id,
         'name': name,
         'price': price,
+        'imageUrl': imageUrl,
+        'description': description,
+      };
+
+  Map<String, String> toMap() => {
+        'id': id,
+        'name': name,
+        'price': '$price',
         'imageUrl': imageUrl,
         'description': description,
       };

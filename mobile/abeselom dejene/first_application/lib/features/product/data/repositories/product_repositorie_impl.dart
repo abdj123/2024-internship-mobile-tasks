@@ -13,9 +13,15 @@ class ProductRepositoryImpl extends ProductRepository {
   ProductRepositoryImpl({required this.productRemoteDataSource});
 
   @override
-  Future<Either<Failure, void>> deleteProduct(String id) {
-    // TODO: implement deleteProduct
-    throw UnimplementedError();
+  Future<Either<Failure, void>> deleteProduct(String id) async {
+    try {
+      final result = await productRemoteDataSource.deleteProduct(id);
+      return Right(result);
+    } on ServerException {
+      return const Left(ServerFailure('An error has occurred'));
+    } on SocketException {
+      return const Left(ConnectionFailure('Failed to connect to the network'));
+    }
   }
 
   @override
@@ -31,14 +37,32 @@ class ProductRepositoryImpl extends ProductRepository {
   }
 
   @override
-  Future<Either<Failure, void>> insertProduct(ProductEntity product) {
-    // TODO: implement insertProduct
-    throw UnimplementedError();
+  Future<Either<Failure, void>> insertProduct(ProductEntity product) async {
+    try {
+      final result = await productRemoteDataSource.insertProduct(product);
+      return Right(result);
+    } on ServerException {
+      return const Left(ServerFailure('An error has occurred'));
+    } on SocketException {
+      return const Left(ConnectionFailure('Failed to connect to the network'));
+    }
   }
 
   @override
   Future<Either<Failure, void>> updateProduct(ProductEntity product) {
     // TODO: implement updateProduct
     throw UnimplementedError();
+  }
+
+  @override
+  Future<Either<Failure, List<ProductEntity>>> getAllProduct() async {
+    try {
+      final result = await productRemoteDataSource.getAllProduct();
+      return Right(result);
+    } on ServerException {
+      return const Left(ServerFailure('An error has occurred'));
+    } on SocketException {
+      return const Left(ConnectionFailure('Failed to connect to the network'));
+    }
   }
 }

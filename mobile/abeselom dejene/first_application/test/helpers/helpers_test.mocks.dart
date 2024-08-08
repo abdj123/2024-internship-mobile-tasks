@@ -163,21 +163,39 @@ class MockProductRepository extends _i1.Mock implements _i6.ProductRepository {
       ) as _i7.Future<_i2.Either<_i8.Failure, void>>);
 
   @override
-  _i7.Future<_i2.Either<_i8.Failure, void>> deleteProduct(String? id) =>
+  _i7.Future<_i2.Either<_i8.Failure, bool>> deleteProduct(String? id) =>
       (super.noSuchMethod(
         Invocation.method(
           #deleteProduct,
           [id],
         ),
-        returnValue: _i7.Future<_i2.Either<_i8.Failure, void>>.value(
-            _FakeEither_0<_i8.Failure, void>(
+        returnValue: _i7.Future<_i2.Either<_i8.Failure, bool>>.value(
+            _FakeEither_0<_i8.Failure, bool>(
           this,
           Invocation.method(
             #deleteProduct,
             [id],
           ),
         )),
-      ) as _i7.Future<_i2.Either<_i8.Failure, void>>);
+      ) as _i7.Future<_i2.Either<_i8.Failure, bool>>);
+
+  @override
+  _i7.Future<_i2.Either<_i8.Failure, List<_i9.ProductEntity>>>
+      getAllProduct() => (super.noSuchMethod(
+            Invocation.method(
+              #getAllProduct,
+              [],
+            ),
+            returnValue: _i7
+                .Future<_i2.Either<_i8.Failure, List<_i9.ProductEntity>>>.value(
+                _FakeEither_0<_i8.Failure, List<_i9.ProductEntity>>(
+              this,
+              Invocation.method(
+                #getAllProduct,
+                [],
+              ),
+            )),
+          ) as _i7.Future<_i2.Either<_i8.Failure, List<_i9.ProductEntity>>>);
 }
 
 /// A class which mocks [ProductRemoteDataSource].
@@ -204,6 +222,25 @@ class MockProductRemoteDataSource extends _i1.Mock
           ),
         )),
       ) as _i7.Future<_i3.ProductModel>);
+
+  @override
+  _i7.Future<List<_i3.ProductModel>> getAllProduct() => (super.noSuchMethod(
+        Invocation.method(
+          #getAllProduct,
+          [],
+        ),
+        returnValue:
+            _i7.Future<List<_i3.ProductModel>>.value(<_i3.ProductModel>[]),
+      ) as _i7.Future<List<_i3.ProductModel>>);
+
+  @override
+  _i7.Future<bool> deleteProduct(String? id) => (super.noSuchMethod(
+        Invocation.method(
+          #deleteProduct,
+          [id],
+        ),
+        returnValue: _i7.Future<bool>.value(false),
+      ) as _i7.Future<bool>);
 }
 
 /// A class which mocks [SharedPreferences].

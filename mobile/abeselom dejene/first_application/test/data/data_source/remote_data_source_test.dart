@@ -35,6 +35,19 @@ void main() {
       expect(result, isA<ProductModel>());
     });
 
+    test('should return All Product when the response code is 200', () async {
+      //arrange
+      when(mockHttpClient.get(Uri.parse(Urls.baseUrl))).thenAnswer((_) async =>
+          http.Response(
+              readJson('helpers/dummy_data/dummy_product_response.json'), 200));
+
+      //act
+      final result = await productRemoteDataSourceImpl.getAllProduct();
+
+      //assert
+      expect(result[0], isA<ProductModel>());
+    });
+
     test(
       'should throw a server exception when the response code is 404 or other',
       () async {

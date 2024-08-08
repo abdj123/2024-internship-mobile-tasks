@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../widgets/reusable_card.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -91,38 +93,7 @@ class _HomePageState extends State<HomePage> {
                     onTap: () {
                       Navigator.pushNamed(context, '/detail_page');
                     },
-                    child: Card(
-                      child: Column(
-                        children: [
-                          Image.asset(
-                            "assets/Rectangle 27.png",
-                            fit: BoxFit.cover,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              reusableText(
-                                  "Derby Leather Shoes", FontWeight.w500, 20),
-                              reusableText("\$120", FontWeight.w500, 14),
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 25.0, vertical: 20),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                reusableText("Men’s shoe", FontWeight.w400, 12),
-                                const Spacer(),
-                                const Icon(Icons.star,
-                                    color: Colors.yellow, size: 15),
-                                reusableText("(4.0)", FontWeight.w400, 12),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    child: const ReusableCard(),
                   );
                 },
               ),
