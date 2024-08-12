@@ -6,7 +6,7 @@ class ProductModel extends ProductEntity {
     required String name,
     required String description,
     required String imageUrl,
-    required int price,
+    required dynamic price,
   }) : super(
           description: description,
           id: id,
@@ -16,11 +16,11 @@ class ProductModel extends ProductEntity {
         );
 
   factory ProductModel.fromJsonData(Map<String, dynamic> json) => ProductModel(
-        id: json['data'][0]['id'],
-        name: json['data'][0]['name'],
-        description: json['data'][0]['description'],
-        imageUrl: json['data'][0]['imageUrl'],
-        price: json['data'][0]['price'],
+        id: json['data']['id'],
+        name: json['data']['name'],
+        description: json['data']['description'],
+        imageUrl: json['data']['imageUrl'],
+        price: json['data']['price'],
       );
 
   factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
@@ -31,12 +31,22 @@ class ProductModel extends ProductEntity {
         price: json['price'],
       );
 
+  static ProductModel fromEntity(ProductEntity entity) {
+    return ProductModel(
+      id: entity.id,
+      name: entity.name,
+      description: entity.description,
+      imageUrl: entity.imageUrl,
+      price: entity.price,
+    );
+  }
+
   factory ProductModel.forLocalJson(Map<String, dynamic> json) => ProductModel(
         id: json['id'],
         name: json['name'],
         description: json['description'],
         imageUrl: json['imageUrl'],
-        price: json['price'],
+        price: json['price'] as int,
       );
   Map<String, dynamic> toJson() => {
         'id': id,

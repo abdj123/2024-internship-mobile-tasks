@@ -13,7 +13,7 @@ class ProductRepositoryImpl extends ProductRepository {
   ProductRepositoryImpl({required this.productRemoteDataSource});
 
   @override
-  Future<Either<Failure, void>> deleteProduct(String id) async {
+  Future<Either<Failure, bool>> deleteProduct(String id) async {
     try {
       final result = await productRemoteDataSource.deleteProduct(id);
       return Right(result);
@@ -37,7 +37,7 @@ class ProductRepositoryImpl extends ProductRepository {
   }
 
   @override
-  Future<Either<Failure, void>> insertProduct(ProductEntity product) async {
+  Future<Either<Failure, bool>> insertProduct(ProductEntity product) async {
     try {
       final result = await productRemoteDataSource.insertProduct(product);
       return Right(result);
@@ -49,9 +49,16 @@ class ProductRepositoryImpl extends ProductRepository {
   }
 
   @override
-  Future<Either<Failure, void>> updateProduct(ProductEntity product) {
-    // TODO: implement updateProduct
-    throw UnimplementedError();
+  Future<Either<Failure, bool>> updateProduct(
+      String id, ProductEntity product) async {
+    try {
+      final result = await productRemoteDataSource.updateProduct(id, product);
+      return Right(result);
+    } on ServerException {
+      return const Left(ServerFailure('An error has occurred'));
+    } on SocketException {
+      return const Left(ConnectionFailure('Failed to connect to the network'));
+    }
   }
 
   @override

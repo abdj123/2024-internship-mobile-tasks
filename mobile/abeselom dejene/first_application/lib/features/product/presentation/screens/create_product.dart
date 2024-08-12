@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../domain/entities/product.dart';
+import '../bloc/product_bloc.dart';
 
 class CreateProduct extends StatefulWidget {
   const CreateProduct({super.key});
@@ -8,6 +12,10 @@ class CreateProduct extends StatefulWidget {
 }
 
 class _CreateProductState extends State<CreateProduct> {
+  TextEditingController nameController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
+  TextEditingController priceController = TextEditingController();
+  TextEditingController catagoryController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,17 +70,17 @@ class _CreateProductState extends State<CreateProduct> {
                   height: 20,
                 ),
                 reusableText("name", FontWeight.w500, 14),
-                reusabletextField(""),
+                reusabletextField("", nameController),
                 const SizedBox(
                   height: 20,
                 ),
                 reusableText("category", FontWeight.w500, 14),
-                reusabletextField(""),
+                reusabletextField("", catagoryController),
                 const SizedBox(
                   height: 20,
                 ),
                 reusableText("price", FontWeight.w500, 14),
-                reusabletextField("\$"),
+                reusabletextField("\$", priceController),
                 const SizedBox(
                   height: 20,
                 ),
@@ -84,11 +92,12 @@ class _CreateProductState extends State<CreateProduct> {
                       borderRadius: BorderRadius.circular(6),
                       border:
                           Border.all(width: 1, color: const Color(0xffD9D9D9))),
-                  child: const Center(
+                  child: Center(
                     child: TextField(
+                      controller: descriptionController,
                       minLines: 5,
                       maxLines: 15,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         contentPadding: EdgeInsetsDirectional.only(start: 4),
                         hintStyle: TextStyle(color: Color(0xffC1C1C1)),
                         border: InputBorder.none,
@@ -97,18 +106,32 @@ class _CreateProductState extends State<CreateProduct> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 18.0, top: 28),
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                        color: const Color(0xff3F51F3),
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 16, horizontal: 34),
-                      child: Center(
-                          child: reusableText(
-                              "ADD", FontWeight.w600, 14, Colors.white)),
+                GestureDetector(
+                  onTap: () {
+                    final createProduct = ProductEntity(
+                        id: "",
+                        name: nameController.text,
+                        description: descriptionController.text,
+                        price: priceController.text,
+                        imageUrl:
+                            "https://res.cloudinary.com/g5-mobile-track/image/upload/v1718777132/images/zxjhzrflkvsjutgbmr0f.jpg");
+                    final productBloc = BlocProvider.of<ProductBloc>(context);
+
+                    productBloc.add(CreateProductEvent(createProduct));
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 18.0, top: 28),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                          color: const Color(0xff3F51F3),
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 16, horizontal: 34),
+                        child: Center(
+                            child: reusableText(
+                                "ADD", FontWeight.w600, 14, Colors.white)),
+                      ),
                     ),
                   ),
                 ),
@@ -145,7 +168,8 @@ Text reusableText(String text, FontWeight wight, double size,
   );
 }
 
-Container reusabletextField(String hint, {TextInputType? type}) {
+Container reusabletextField(String hint, TextEditingController controller,
+    {TextInputType? type}) {
   return Container(
     height: 50,
     padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -155,6 +179,7 @@ Container reusabletextField(String hint, {TextInputType? type}) {
         border: Border.all(width: 1, color: const Color(0xffD9D9D9))),
     child: Center(
       child: TextField(
+        controller: controller,
         keyboardType: type,
         decoration: InputDecoration(
           hintText: hint,

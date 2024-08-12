@@ -3,12 +3,11 @@ import 'package:first_application/core/error/failure.dart';
 import 'package:first_application/features/product/domain/entities/product.dart';
 import 'package:first_application/features/product/domain/repositories/product_repository.dart';
 
-class UpdateProductUseCase {
+class GetProductUseCase {
   final ProductRepository productRepository;
-  UpdateProductUseCase(this.productRepository);
+  GetProductUseCase(this.productRepository);
 
-  Future<Either<Failure, bool>> execute(
-      String id, ProductEntity productEntity) async {
-    return await productRepository.updateProduct(id, productEntity);
+  Future<Either<Failure, List<ProductEntity>>> execute() async {
+    return await productRepository.getAllProduct();
   }
 }

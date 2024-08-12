@@ -10,9 +10,9 @@ import '../models/product_model.dart';
 abstract class ProductRemoteDataSource {
   Future<ProductModel> getProductById(String id);
   Future<List<ProductModel>> getAllProduct();
-  Future<void> deleteProduct(String id);
-  Future<void> insertProduct(ProductEntity product);
-  Future<void> updateProduct(String id);
+  Future<bool> deleteProduct(String id);
+  Future<bool> insertProduct(ProductEntity product);
+  Future<bool> updateProduct(String id, ProductEntity productEntity);
 }
 
 class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
@@ -36,8 +36,6 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
     final response = await client.get(Uri.parse(Urls.baseUrl));
 
     if (response.statusCode == 200) {
-      // return ProductModel.fromJson(json.decode(response.body));
-
       final data = jsonDecode(response.body);
       data['data']
           .forEach((el) async => {allProducts.add(ProductModel.fromJson(el))});
@@ -48,17 +46,18 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
   }
 
   @override
-  Future<void> deleteProduct(String id) async {
+  Future<bool> deleteProduct(String id) async {
     final response = await client.delete(Uri.parse(Urls.getProduct(id)));
 
     if (response.statusCode == 200) {
+      return true;
     } else {
       throw ServerException();
     }
   }
 
   @override
-  Future<void> insertProduct(ProductEntity product) async {
+  Future<bool> insertProduct(ProductEntity product) async {
     final Map<String, String> mapper = {
       'image': product.imageUrl,
       'name': product.name,
@@ -69,22 +68,24 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
         await client.post(Uri.parse(Urls.baseUrl), headers: mapper);
 
     if (response.statusCode == 201) {
+      return true;
     } else {
       throw ServerException();
     }
   }
 
   @override
-  Future<void> updateProduct(String id) async {
+  Future<bool> updateProduct(String id, ProductEntity productEntity) async {
     final Map<String, String> mapper = {
-      "name": "TV",
-      "description": "36' TV",
-      "price": "123.4"
+      "name": productEntity.name,
+      "description": productEntity.description,
+      "price": productEntity.price,
     };
     final response =
         await client.put(Uri.parse(Urls.getProduct(id)), headers: mapper);
 
     if (response.statusCode == 200) {
+      return true;
     } else {
       throw ServerException();
     }

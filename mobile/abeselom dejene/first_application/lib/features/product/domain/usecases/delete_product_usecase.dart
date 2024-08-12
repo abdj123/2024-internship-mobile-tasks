@@ -6,7 +6,7 @@ class DeleteProductUseCase {
   final ProductRepository productRepository;
   DeleteProductUseCase(this.productRepository);
 
-  Future<Either<Failure, void>> execute(String id) async {
+  Future<Either<Failure, bool>> execute(String id) async {
     return await productRepository.deleteProduct(id);
   }
 }

@@ -7,7 +7,7 @@ class InsertProductUseCase {
   final ProductRepository productRepository;
   InsertProductUseCase(this.productRepository);
 
-  Future<Either<Failure, void>> execute(ProductEntity productEntity) async {
+  Future<Either<Failure, bool>> execute(ProductEntity productEntity) async {
     return await productRepository.insertProduct(productEntity);
   }
 }

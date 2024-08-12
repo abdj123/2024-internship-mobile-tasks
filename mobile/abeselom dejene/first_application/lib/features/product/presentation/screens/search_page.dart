@@ -205,7 +205,13 @@ class _SearchPageState extends State<SearchPage> {
                       onTap: () {
                         Navigator.pushNamed(context, '/detail_page');
                       },
-                      child: const ReusableCard(),
+                      child: const ReusableCard(
+                        image:
+                            "https://res.cloudinary.com/g5-mobile-track/image/upload/v1718777304/images/lmngzkii9zfo17ohxa6n.jpg",
+                        description: "",
+                        price: 1,
+                        title: "kjhkj",
+                      ),
                     );
                   },
                 ),
