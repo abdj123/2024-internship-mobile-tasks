@@ -1,20 +1,33 @@
 import 'package:equatable/equatable.dart';
 import 'package:first_application/features/product/data/models/product_model.dart';
 import 'package:first_application/features/product/domain/entities/product.dart';
+import 'package:first_application/features/product/domain/usecases/delete_product_usecase.dart';
+import 'package:first_application/features/product/domain/usecases/get_all_products_usecase.dart';
+import 'package:first_application/features/product/domain/usecases/get_product_usecase.dart';
+import 'package:first_application/features/product/domain/usecases/insert_product_usecase.dart';
+import 'package:first_application/features/product/domain/usecases/update_product_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../data/repositories/product_repositorie_impl.dart';
 
 part 'product_event.dart';
 part 'product_state.dart';
 
 class ProductBloc extends Bloc<ProductEvent, ProductState> {
-  final ProductRepositoryImpl productRepositoryImpl;
+  final GetProductUseCase getProductUseCase;
+  final GetAllProductUseCase getAllProductUseCase;
+  final UpdateProductUseCase updateProductUseCase;
+  final DeleteProductUseCase deleteProductUseCase;
+  final InsertProductUseCase insertProductUseCase;
 
-  ProductBloc(this.productRepositoryImpl) : super(ProductInitial()) {
+  ProductBloc(
+      this.getProductUseCase,
+      this.getAllProductUseCase,
+      this.updateProductUseCase,
+      this.deleteProductUseCase,
+      this.insertProductUseCase)
+      : super(ProductInitial()) {
     on<GetSingleProductEvent>((event, emit) async {
       emit(LoadingState());
-      final result = await productRepositoryImpl.getProduct(event.id);
+      final result = await getProductUseCase.execute(event.id);
       result.fold((failure) {
         emit(ErrorState(failure.message));
       }, (data) {
@@ -24,7 +37,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
     on<LoadAllProductEvent>((event, emit) async {
       emit(LoadingState());
-      final result = await productRepositoryImpl.getAllProduct();
+      final result = await getAllProductUseCase.execute();
       result.fold((failure) {
         emit(ErrorState(failure.message));
       }, (data) {
@@ -38,8 +51,8 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
     on<UpdateProductEvent>((event, emit) async {
       emit(LoadingState());
-      final result = await productRepositoryImpl.updateProduct(
-          event.id, event.productEntity);
+      final result =
+          await updateProductUseCase.execute(event.id, event.productEntity);
 
       result.fold((failure) {
         emit(ErrorState(failure.message));
@@ -51,7 +64,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     on<DeleteProductEvent>(
       (event, emit) async {
         emit(LoadingState());
-        final result = await productRepositoryImpl.deleteProduct(event.id);
+        final result = await deleteProductUseCase.execute(event.id);
 
         result.fold((failure) {
           emit(ErrorState(failure.message));
@@ -64,8 +77,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     on<CreateProductEvent>(
       (event, emit) async {
         emit(LoadingState());
-        final result =
-            await productRepositoryImpl.insertProduct(event.productEntity);
+        final result = await insertProductUseCase.execute(event.productEntity);
 
         result.fold((failure) {
           emit(ErrorState(failure.message));

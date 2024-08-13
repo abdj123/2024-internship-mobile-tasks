@@ -9,12 +9,26 @@ import 'package:mockito/mockito.dart';
 import '../../helpers/helpers_test.mocks.dart';
 
 void main() {
-  late MockProductRepositoryImpl mockProductRepositoryImpl;
+  late MockGetProductUseCase mockGetProductUseCase;
+  late MockGetAllProductUseCase mockGetAllProductUseCase;
+  late MockDeleteProductUseCase mockDeleteProductUseCase;
+  late MockUpdateProductUseCase mockUpdateProductUseCase;
+  late MockInsertProductUseCase mockInsertProductUseCase;
   late ProductBloc productBloc;
 
   setUp(() {
-    mockProductRepositoryImpl = MockProductRepositoryImpl();
-    productBloc = ProductBloc(mockProductRepositoryImpl);
+    mockGetProductUseCase = MockGetProductUseCase();
+    mockGetAllProductUseCase = MockGetAllProductUseCase();
+    mockUpdateProductUseCase = MockUpdateProductUseCase();
+    mockInsertProductUseCase = MockInsertProductUseCase();
+    mockDeleteProductUseCase = MockDeleteProductUseCase();
+
+    productBloc = ProductBloc(
+        mockGetProductUseCase,
+        mockGetAllProductUseCase,
+        mockUpdateProductUseCase,
+        mockDeleteProductUseCase,
+        mockInsertProductUseCase);
   });
 
   const testProductEntity = ProductEntity(
@@ -34,7 +48,7 @@ void main() {
   blocTest<ProductBloc, ProductState>(
       'should emit [ProductLoading, GetProducts] when data is gotten successfully',
       build: () {
-        when(mockProductRepositoryImpl.getProduct(testProductId))
+        when(mockGetProductUseCase.execute(testProductId))
             .thenAnswer((_) async => const Right(testProductEntity));
         return productBloc;
       },
@@ -45,7 +59,7 @@ void main() {
   blocTest<ProductBloc, ProductState>(
       'should emit [ProductLoading, GetAllProducts] when data is gotten successfully',
       build: () {
-        when(mockProductRepositoryImpl.getAllProduct())
+        when(mockGetAllProductUseCase.execute())
             .thenAnswer((_) async => const Right([]));
         return productBloc;
       },
@@ -56,7 +70,7 @@ void main() {
   blocTest<ProductBloc, ProductState>(
       'should emit [ProductLoading, GetAllProducts] when data is gotten successfully',
       build: () {
-        when(mockProductRepositoryImpl.getAllProduct())
+        when(mockGetAllProductUseCase.execute())
             .thenAnswer((_) async => const Right([]));
         return productBloc;
       },
@@ -67,7 +81,7 @@ void main() {
   blocTest<ProductBloc, ProductState>(
       'should emit [ProductLoading] when Delete successful',
       build: () {
-        when(mockProductRepositoryImpl.deleteProduct(testProductId))
+        when(mockDeleteProductUseCase.execute(testProductId))
             .thenAnswer((_) async => const Right(true));
         return productBloc;
       },
@@ -77,8 +91,7 @@ void main() {
   blocTest<ProductBloc, ProductState>(
       'should emit [ProductLoading] when Update successful',
       build: () {
-        when(mockProductRepositoryImpl.updateProduct(
-                testProductId, testProductEntity))
+        when(mockUpdateProductUseCase.execute(testProductId, testProductEntity))
             .thenAnswer((_) async => const Right(true));
         return productBloc;
       },
@@ -89,7 +102,7 @@ void main() {
   blocTest<ProductBloc, ProductState>(
       'should emit [ProductLoading] when insert successful',
       build: () {
-        when(mockProductRepositoryImpl.insertProduct(testProductEntity))
+        when(mockInsertProductUseCase.execute(testProductEntity))
             .thenAnswer((_) async => const Right(true));
         return productBloc;
       },
@@ -99,7 +112,7 @@ void main() {
   blocTest<ProductBloc, ProductState>(
       'should emit [ProductLoading, ProductLoadFailure] when get data is unsuccessful',
       build: () {
-        when(mockProductRepositoryImpl.getProduct(testProductId)).thenAnswer(
+        when(mockGetProductUseCase.execute(testProductId)).thenAnswer(
             (_) async => const Left(ServerFailure('Server failure')));
         return productBloc;
       },
