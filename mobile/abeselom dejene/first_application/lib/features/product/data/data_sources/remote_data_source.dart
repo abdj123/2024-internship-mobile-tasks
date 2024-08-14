@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:http_parser/http_parser.dart';
 
 import 'package:first_application/features/product/domain/entities/product.dart';
 import 'package:http/http.dart' as http;
@@ -58,36 +59,51 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
 
   @override
   Future<bool> insertProduct(ProductEntity product) async {
-    final Map<String, String> mapper = {
-      'image': product.imageUrl,
-      'name': product.name,
-      'description': product.description,
-      'price': '${product.price}'
-    };
-    final response =
-        await client.post(Uri.parse(Urls.baseUrl), headers: mapper);
+    try {
+      var request = http.MultipartRequest('POST', Uri.parse(Urls.baseUrl));
+      request.fields.addAll({
+        'name': product.name,
+        'description': product.description,
+        'price': product.price
+      });
 
-    if (response.statusCode == 201) {
-      return true;
-    } else {
+      request.files.add(await http.MultipartFile.fromPath(
+          'image', product.imageUrl,
+          contentType: MediaType('image', 'png')));
+
+      http.StreamedResponse response = await request.send();
+
+      if (response.statusCode == 201) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
       throw ServerException();
     }
   }
 
   @override
   Future<bool> updateProduct(String id, ProductEntity productEntity) async {
-    final Map<String, String> mapper = {
+    final Map<String, dynamic> mapper = {
       "name": productEntity.name,
       "description": productEntity.description,
-      "price": productEntity.price,
+      "price": int.tryParse(productEntity.price),
     };
-    final response =
-        await client.put(Uri.parse(Urls.getProduct(id)), headers: mapper);
+
+    final encoded = json.encode(mapper);
+
+    var headers = {'Content-Type': 'application/json'};
+    var request = http.Request('PUT', Uri.parse(Urls.getProduct(id)));
+    request.body = encoded;
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
 
     if (response.statusCode == 200) {
       return true;
     } else {
-      throw ServerException();
+      return false;
     }
   }
 }

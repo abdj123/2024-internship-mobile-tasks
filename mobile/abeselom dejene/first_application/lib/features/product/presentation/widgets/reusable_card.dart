@@ -18,10 +18,13 @@ class ReusableCard extends StatelessWidget {
     return Card(
       child: Column(
         children: [
-          FadeInImage.assetNetwork(
-            placeholder: "assets/Rectangle 27.png",
-            image: image,
-            fit: BoxFit.cover,
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+            child: FadeInImage.assetNetwork(
+              placeholder: "assets/Rectangle 27.png",
+              image: image,
+              fit: BoxFit.cover,
+            ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,

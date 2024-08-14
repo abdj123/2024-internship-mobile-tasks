@@ -1,3 +1,4 @@
+import 'package:first_application/features/product/domain/entities/product.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -120,7 +121,13 @@ class _HomePageState extends State<HomePage> {
                                   return GestureDetector(
                                     onTap: () {
                                       Navigator.pushNamed(
-                                          context, '/detail_page');
+                                          context, '/detail_page',
+                                          arguments: ProductEntity(
+                                              id: item.id,
+                                              description: item.description,
+                                              imageUrl: item.imageUrl,
+                                              name: item.name,
+                                              price: item.price));
                                     },
                                     child: ReusableCard(
                                         description: item.description,

@@ -57,7 +57,9 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       result.fold((failure) {
         emit(ErrorState(failure.message));
       }, (data) {
-        return data;
+        if (data) {
+          emit(const SuccessState('Product Updated Successfuly'));
+        }
       });
     });
 
@@ -69,6 +71,12 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
         result.fold((failure) {
           emit(ErrorState(failure.message));
         }, (data) {
+          if (data) {
+            emit(const SuccessState('Product Deleted Successfuly'));
+          } else {
+            emit(const ErrorState('Error Occured'));
+          }
+
           return data;
         });
       },
@@ -82,7 +90,9 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
         result.fold((failure) {
           emit(ErrorState(failure.message));
         }, (data) {
-          return data;
+          if (data) {
+            emit(const SuccessState('Product Created Successfuly'));
+          }
         });
       },
     );

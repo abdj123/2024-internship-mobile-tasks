@@ -1,4 +1,8 @@
+import 'package:first_application/features/product/domain/entities/product.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../bloc/product_bloc.dart';
 
 class DetailPage extends StatefulWidget {
   const DetailPage({super.key});
@@ -12,6 +16,8 @@ class _DetailPageState extends State<DetailPage> {
   int selected = 0;
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments as ProductEntity;
+
     return Scaffold(
       body: SafeArea(
           child: Column(
@@ -22,8 +28,8 @@ class _DetailPageState extends State<DetailPage> {
                   color: const Color(0xb3000000),
                   height: 280,
                   width: double.infinity,
-                  child: Image.asset(
-                    "assets/Rectangle 27.png",
+                  child: Image.network(
+                    args.imageUrl,
                     fit: BoxFit.cover,
                   )),
               Positioned(
@@ -61,8 +67,8 @@ class _DetailPageState extends State<DetailPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      reusableText("Derby Leather Shoes", FontWeight.w600, 24),
-                      reusableText("\$120", FontWeight.w500, 16),
+                      reusableText(args.name, FontWeight.w600, 24),
+                      reusableText("\$${args.price}", FontWeight.w500, 16),
                     ],
                   ),
                 ),
@@ -99,38 +105,77 @@ class _DetailPageState extends State<DetailPage> {
                     },
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 18.0, bottom: 45),
+                Padding(
+                  padding: const EdgeInsets.only(top: 18.0, bottom: 45),
                   child: Text(
-                    "A derby leather shoe is a classic and versatile footwear option characterized by its open lacing system, where the shoelace eyelets are sewn on top of the vamp (the upper part of the shoe). This design feature provides a more relaxed and casual look compared to the closed lacing system of oxford shoes. Derby shoes are typically made of high-quality leather, known for its durability and elegance, making them suitable for both formal and casual occasions. With their timeless style and comfortable fit, derby leather shoes are a staple in any well-rounded wardrobe.",
-                    style: TextStyle(fontWeight: FontWeight.w400, fontSize: 14),
+                    args.description,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w400, fontSize: 14),
                   ),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.red),
-                          borderRadius: BorderRadius.circular(10)),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 34),
-                        child: Center(
-                            child: reusableText(
-                                "DELETE", FontWeight.w600, 14, Colors.red)),
-                      ),
+                    BlocConsumer<ProductBloc, ProductState>(
+                      listener: (context, state) {
+                        if (state is SuccessState) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(state.message)),
+                          );
+                          Navigator.pop(context);
+                          context
+                              .read<ProductBloc>()
+                              .add(LoadAllProductEvent());
+                        } else if (state is ErrorState) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(state.message)),
+                          );
+                        }
+                      },
+                      builder: (context, state) {
+                        return GestureDetector(
+                          onTap: () {
+                            final productBloc =
+                                BlocProvider.of<ProductBloc>(context);
+
+                            productBloc.add(DeleteProductEvent(args.id));
+                          },
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.red),
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 34),
+                              child: Center(
+                                  child: reusableText("DELETE", FontWeight.w600,
+                                      14, Colors.red)),
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                          color: const Color(0xff3F51F3),
-                          borderRadius: BorderRadius.circular(10)),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 34),
-                        child: Center(
-                            child: reusableText(
-                                "UPDATE", FontWeight.w600, 14, Colors.white)),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, '/update_product',
+                            arguments: ProductEntity(
+                                id: args.id,
+                                description: args.description,
+                                imageUrl: args.imageUrl,
+                                name: args.name,
+                                price: args.price));
+                      },
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                            color: const Color(0xff3F51F3),
+                            borderRadius: BorderRadius.circular(10)),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 34),
+                          child: Center(
+                              child: reusableText(
+                                  "UPDATE", FontWeight.w600, 14, Colors.white)),
+                        ),
                       ),
                     )
                   ],

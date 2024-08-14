@@ -1,29 +1,32 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../../domain/entities/product.dart';
 import '../bloc/product_bloc.dart';
 
-class CreateProduct extends StatefulWidget {
-  const CreateProduct({super.key});
+class UpdateProduct extends StatefulWidget {
+  const UpdateProduct({super.key});
 
   @override
-  State<CreateProduct> createState() => _CreateProductState();
+  State<UpdateProduct> createState() => _UpdateProductState();
 }
 
-class _CreateProductState extends State<CreateProduct> {
+class _UpdateProductState extends State<UpdateProduct> {
   TextEditingController nameController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   TextEditingController priceController = TextEditingController();
   TextEditingController catagoryController = TextEditingController();
-
-  File? selectedImage;
+  void setInit() {
+    final args = ModalRoute.of(context)!.settings.arguments as ProductEntity;
+    nameController.text = args.name;
+    descriptionController.text = args.description;
+    priceController.text = '${args.price}';
+  }
 
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments as ProductEntity;
+    setInit();
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -53,39 +56,17 @@ class _CreateProductState extends State<CreateProduct> {
                 const SizedBox(
                   height: 25,
                 ),
-                GestureDetector(
-                  onTap: () async {
-                    final temp = await pickImage();
-
-                    setState(() {
-                      selectedImage = temp;
-                    });
-                  },
-                  child: SizedBox(
-                    height: 190,
-                    width: double.infinity,
-                    child: DecoratedBox(
+                SizedBox(
+                  height: 190,
+                  width: double.infinity,
+                  child: DecoratedBox(
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16),
                           color: const Color(0xffF3F3F3)),
-                      child: selectedImage != null
-                          ? Image.file(
-                              selectedImage!,
-                              fit: BoxFit.cover,
-                            )
-                          : Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(
-                                  Icons.image,
-                                  size: 36,
-                                ),
-                                reusableText(
-                                    "upload image", FontWeight.w500, 14)
-                              ],
-                            ),
-                    ),
-                  ),
+                      child: Image.network(
+                        args.imageUrl,
+                        fit: BoxFit.cover,
+                      )),
                 ),
                 const SizedBox(
                   height: 20,
@@ -128,44 +109,59 @@ class _CreateProductState extends State<CreateProduct> {
                   ),
                 ),
                 BlocConsumer<ProductBloc, ProductState>(
-                  listener: (context, state) {},
+                  listener: (context, state) {
+                    if (state is SuccessState) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(state.message)),
+                      );
+                      Navigator.pop(context);
+                      context.read<ProductBloc>().add(LoadAllProductEvent());
+                    } else if (state is ErrorState) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(state.message)),
+                      );
+                    }
+                  },
                   builder: (context, state) {
                     return Column(
                       children: [
                         GestureDetector(
                           onTap: () async {
-                            if (selectedImage == null ||
-                                nameController.text == '' ||
-                                descriptionController.text == '' ||
-                                !validatePrice(priceController.text)) {
+                            final productName = nameController.text != args.name
+                                ? nameController.text
+                                : args.name;
+
+                            final productprice =
+                                priceController.text != args.price
+                                    ? priceController.text
+                                    : args.price;
+
+                            final productDescription =
+                                descriptionController.text != args.description
+                                    ? descriptionController.text
+                                    : args.description;
+
+                            if (productName == '' ||
+                                productprice == '' ||
+                                productDescription == '' ||
+                                !validatePrice(productprice)) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                       content: Text(
                                           'Please Provide Required Fields')));
                             } else {
-                              final newProduct = ProductEntity(
-                                  id: "",
-                                  name: nameController.text,
-                                  description: descriptionController.text,
-                                  price: priceController.text,
-                                  imageUrl: selectedImage!.path);
+                              final updatedProduct = ProductEntity(
+                                  id: args.id,
+                                  name: productName,
+                                  description: productDescription,
+                                  price: productprice,
+                                  imageUrl: args.imageUrl);
 
                               final productBloc =
                                   BlocProvider.of<ProductBloc>(context);
 
-                              productBloc.add(CreateProductEvent(newProduct));
-
-                              if (state is SuccessState) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(state.message)));
-                              }
-
-                              setState(() {
-                                selectedImage = null;
-                                nameController.clear();
-                                priceController.clear();
-                                descriptionController.clear();
-                              });
+                              productBloc.add(
+                                  UpdateProductEvent(updatedProduct, args.id));
                             }
                           },
                           child: Padding(
@@ -247,17 +243,6 @@ Container reusabletextField(String hint, TextEditingController controller,
       ),
     ),
   );
-}
-
-Future<File?> pickImage() async {
-  final ImagePicker picker = ImagePicker();
-  final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-  if (pickedFile != null) {
-    return File(pickedFile.path);
-  } else {
-    return null;
-  }
 }
 
 bool validatePrice(String value) {

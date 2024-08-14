@@ -9,6 +9,12 @@ sealed class ProductState extends Equatable {
 
 final class ProductInitial extends ProductState {}
 
+final class SuccessState extends ProductState {
+  final String message;
+
+  const SuccessState(this.message);
+}
+
 final class LoadingState extends ProductState {}
 
 final class LoadedAllProductState extends ProductState {
