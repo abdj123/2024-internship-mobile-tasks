@@ -9,17 +9,22 @@ import 'package:first_application/features/product/domain/entities/product.dart'
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
-import '../../helpers/helpers_test.mocks.dart';
+import '../../../../helpers/helpers_test.mocks.dart';
 
-void main() {
+void main() async {
   late MockProductRemoteDataSource mockProductRemoteDataSource;
   late ProductRepositoryImpl productRepositoryImpl;
+  late MockAuthLocalDataSource mockAuthLocalDataSource;
 
   setUp(() {
     mockProductRemoteDataSource = MockProductRemoteDataSource();
+    mockAuthLocalDataSource = MockAuthLocalDataSource();
     productRepositoryImpl = ProductRepositoryImpl(
-        productRemoteDataSource: mockProductRemoteDataSource);
+        productRemoteDataSource: mockProductRemoteDataSource,
+        localDataSource: mockAuthLocalDataSource);
   });
+
+  final token = await mockAuthLocalDataSource.getCachedToken();
 
   const testProductModel = ProductModel(
       id: "6672752cbd218790438efdb0",
@@ -43,7 +48,7 @@ void main() {
     test('Repository Implimentation Test', () async {
       // arrange
 
-      when(mockProductRemoteDataSource.getProductById(testProductId))
+      when(mockProductRemoteDataSource.getProductById(testProductId, token))
           .thenAnswer((realInvocation) async => testProductModel);
 
       // act
@@ -58,7 +63,7 @@ void main() {
       'should return server failure when a call to data source is unsuccessful',
       () async {
         // arrange
-        when(mockProductRemoteDataSource.getProductById(testProductId))
+        when(mockProductRemoteDataSource.getProductById(testProductId, token))
             .thenThrow(ServerException());
 
         // act
@@ -74,7 +79,8 @@ void main() {
       'should return connection failure when the device has no internet',
       () async {
         // arrange
-        when(mockProductRemoteDataSource.getProductById(testProductId))
+        when(mockProductRemoteDataSource.getProductById(
+                testProductId, token.toString()))
             .thenThrow(
                 const SocketException('Failed to connect to the network'));
 

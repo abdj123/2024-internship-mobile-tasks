@@ -54,6 +54,7 @@ class _CreateProductState extends State<CreateProduct> {
                   height: 25,
                 ),
                 GestureDetector(
+                  key: const Key('image_picker'),
                   onTap: () async {
                     final temp = await pickImage();
 
@@ -91,17 +92,20 @@ class _CreateProductState extends State<CreateProduct> {
                   height: 20,
                 ),
                 reusableText("name", FontWeight.w500, 14),
-                reusabletextField("", nameController),
+                reusabletextField("", nameController,
+                    key: const Key('name_field')),
                 const SizedBox(
                   height: 20,
                 ),
                 reusableText("category", FontWeight.w500, 14),
-                reusabletextField("", catagoryController),
+                reusabletextField("", catagoryController,
+                    key: const Key('category_field')),
                 const SizedBox(
                   height: 20,
                 ),
                 reusableText("price", FontWeight.w500, 14),
-                reusabletextField("\$", priceController),
+                reusabletextField("\$", priceController,
+                    key: const Key('price_field')),
                 const SizedBox(
                   height: 20,
                 ),
@@ -115,6 +119,7 @@ class _CreateProductState extends State<CreateProduct> {
                           Border.all(width: 1, color: const Color(0xffD9D9D9))),
                   child: Center(
                     child: TextField(
+                      key: const Key('description_field'),
                       controller: descriptionController,
                       minLines: 5,
                       maxLines: 15,
@@ -225,8 +230,9 @@ Text reusableText(String text, FontWeight wight, double size,
 }
 
 Container reusabletextField(String hint, TextEditingController controller,
-    {TextInputType? type}) {
+    {TextInputType? type, Key? key}) {
   return Container(
+    key: key,
     height: 50,
     padding: const EdgeInsets.symmetric(horizontal: 4),
     decoration: BoxDecoration(
@@ -235,6 +241,7 @@ Container reusabletextField(String hint, TextEditingController controller,
         border: Border.all(width: 1, color: const Color(0xffD9D9D9))),
     child: Center(
       child: TextField(
+        key: key,
         controller: controller,
         keyboardType: type,
         decoration: InputDecoration(

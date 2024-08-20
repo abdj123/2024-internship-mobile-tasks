@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../authentication/presentation/bloc/auth_bloc.dart';
 import '../bloc/product_bloc.dart';
 import '../widgets/reusable_card.dart';
 
@@ -88,6 +89,23 @@ class _HomePageState extends State<HomePage> {
                             padding: EdgeInsets.all(4.0),
                             child: Icon(CupertinoIcons.bell),
                           )),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          context.read<AuthBloc>().add(LogOutEvent());
+                          Navigator.pushNamed(context, "/login_page");
+                        },
+                        child: DecoratedBox(
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey),
+                                borderRadius: BorderRadius.circular(8)),
+                            child: const Padding(
+                              padding: EdgeInsets.all(4.0),
+                              child: Icon(Icons.logout_rounded),
+                            )),
+                      )
                     ]),
                     Padding(
                       padding: const EdgeInsets.only(top: 28.0, bottom: 45),
@@ -140,7 +158,11 @@ class _HomePageState extends State<HomePage> {
                             : state is LoadingState
                                 ? const Center(
                                     child: CircularProgressIndicator())
-                                : Container())
+                                : Container(
+                                    child: Center(
+                                        child: reusableText("No Product Found",
+                                            FontWeight.w700, 24)),
+                                  ))
                   ]),
             ),
           );

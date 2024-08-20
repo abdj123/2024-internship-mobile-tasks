@@ -1,3 +1,7 @@
+import 'package:first_application/features/authentication/presentation/bloc/auth_bloc.dart';
+import 'package:first_application/features/authentication/presentation/pages/sign_in_page.dart';
+import 'package:first_application/features/authentication/presentation/pages/sign_up_page.dart';
+import 'package:first_application/features/authentication/presentation/pages/splash_screen.dart';
 import 'package:first_application/features/product/presentation/bloc/product_bloc.dart';
 import 'package:first_application/features/product/presentation/screens/detail_page.dart';
 import 'package:first_application/features/product/presentation/screens/home_page.dart';
@@ -26,16 +30,22 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => locator<ProductBloc>(),
         ),
+        BlocProvider(
+          create: (context) => locator<AuthBloc>(),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         initialRoute: "/",
         routes: {
-          "/": (context) => const HomePage(),
+          "/": (context) => const SplashScreen(),
           "/detail_page": (context) => const DetailPage(),
+          "/home_page": (context) => const HomePage(),
           "/create_product": (context) => const CreateProduct(),
           "/update_product": (context) => const UpdateProduct(),
           "/search_page": (context) => const SearchPage(),
+          "/register_page": (context) => const SignUpPage(),
+          "/login_page": (context) => const LoginPage(),
         },
         title: 'Flutter Demo',
         theme: ThemeData(

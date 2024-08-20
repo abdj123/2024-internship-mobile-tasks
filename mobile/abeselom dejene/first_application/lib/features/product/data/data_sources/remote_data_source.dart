@@ -9,11 +9,12 @@ import '../../../../core/error/exception.dart';
 import '../models/product_model.dart';
 
 abstract class ProductRemoteDataSource {
-  Future<ProductModel> getProductById(String id);
-  Future<List<ProductModel>> getAllProduct();
-  Future<bool> deleteProduct(String id);
-  Future<bool> insertProduct(ProductEntity product);
-  Future<bool> updateProduct(String id, ProductEntity productEntity);
+  Future<ProductModel> getProductById(String id, String token);
+  Future<List<ProductModel>> getAllProduct(String token);
+  Future<bool> deleteProduct(String id, String token);
+  Future<bool> insertProduct(ProductEntity product, String token);
+  Future<bool> updateProduct(
+      String id, ProductEntity productEntity, String token);
 }
 
 class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
@@ -21,8 +22,10 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
   ProductRemoteDataSourceImpl({required this.client});
 
   @override
-  Future<ProductModel> getProductById(String id) async {
-    final response = await client.get(Uri.parse(Urls.getProduct(id)));
+  Future<ProductModel> getProductById(String id, String token) async {
+    final response = await client.get(Uri.parse(Urls.getProduct(id)), headers: {
+      'Authorization': 'Bearer $token',
+    });
 
     if (response.statusCode == 200) {
       return ProductModel.fromJsonData(json.decode(response.body));
@@ -32,9 +35,11 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
   }
 
   @override
-  Future<List<ProductModel>> getAllProduct() async {
+  Future<List<ProductModel>> getAllProduct(String token) async {
     List<ProductModel> allProducts = [];
-    final response = await client.get(Uri.parse(Urls.baseUrl));
+    final response = await client.get(Uri.parse(Urls.baseUrl), headers: {
+      'Authorization': 'Bearer $token',
+    });
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -47,8 +52,11 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
   }
 
   @override
-  Future<bool> deleteProduct(String id) async {
-    final response = await client.delete(Uri.parse(Urls.getProduct(id)));
+  Future<bool> deleteProduct(String id, String token) async {
+    final response =
+        await client.delete(Uri.parse(Urls.getProduct(id)), headers: {
+      'Authorization': 'Bearer $token',
+    });
 
     if (response.statusCode == 200) {
       return true;
@@ -58,9 +66,12 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
   }
 
   @override
-  Future<bool> insertProduct(ProductEntity product) async {
+  Future<bool> insertProduct(ProductEntity product, String token) async {
     try {
       var request = http.MultipartRequest('POST', Uri.parse(Urls.baseUrl));
+      request.headers.addAll({
+        'Authorization': 'Bearer $token',
+      });
       request.fields.addAll({
         'name': product.name,
         'description': product.description,
@@ -84,7 +95,8 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
   }
 
   @override
-  Future<bool> updateProduct(String id, ProductEntity productEntity) async {
+  Future<bool> updateProduct(
+      String id, ProductEntity productEntity, String token) async {
     final Map<String, dynamic> mapper = {
       "name": productEntity.name,
       "description": productEntity.description,
@@ -93,7 +105,10 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
 
     final encoded = json.encode(mapper);
 
-    var headers = {'Content-Type': 'application/json'};
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
     var request = http.Request('PUT', Uri.parse(Urls.getProduct(id)));
     request.body = encoded;
     request.headers.addAll(headers);

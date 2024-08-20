@@ -6,19 +6,21 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:http/http.dart' as http;
 
-import '../../helpers/helpers_test.mocks.dart';
-import '../../helpers/json_reader.dart';
+import '../../../../helpers/helpers_test.mocks.dart';
+import '../../../../helpers/json_reader.dart';
 
-void main() {
+void main() async {
   late MockHttpClient mockHttpClient;
+  late MockAuthLocalDataSource mockAuthLocalDataSource;
   late ProductRemoteDataSourceImpl productRemoteDataSourceImpl;
 
   setUp(() {
     mockHttpClient = MockHttpClient();
+    mockAuthLocalDataSource = MockAuthLocalDataSource();
     productRemoteDataSourceImpl =
         ProductRemoteDataSourceImpl(client: mockHttpClient);
   });
-
+  final token = await mockAuthLocalDataSource.getCachedToken();
   const testId = '6672776eb905525c145fe0bb';
 
   group('get Product Detail', () {
@@ -29,7 +31,8 @@ void main() {
               readJson('helpers/dummy_data/dummy_product_response.json'), 200));
 
       //act
-      final result = await productRemoteDataSourceImpl.getProductById(testId);
+      final result =
+          await productRemoteDataSourceImpl.getProductById(testId, token!);
 
       //assert
       expect(result, isA<ProductModel>());
@@ -42,7 +45,7 @@ void main() {
               readJson('helpers/dummy_data/dummy_product_response.json'), 200));
 
       //act
-      final result = await productRemoteDataSourceImpl.getAllProduct();
+      final result = await productRemoteDataSourceImpl.getAllProduct(token!);
 
       //assert
       expect(result[0], isA<ProductModel>());
@@ -57,7 +60,8 @@ void main() {
         ).thenAnswer((_) async => http.Response('Not found', 404));
 
         //act
-        final result = productRemoteDataSourceImpl.getProductById(testId);
+        final result =
+            productRemoteDataSourceImpl.getProductById(testId, token!);
 
         //assert
         expect(result, throwsA(isA<ServerException>()));

@@ -1,3 +1,9 @@
+import 'package:first_application/features/authentication/data/datasources/auth_local_data_source.dart';
+import 'package:first_application/features/authentication/data/datasources/auth_remote_data_source.dart';
+import 'package:first_application/features/authentication/domain/repositories/auth_repository.dart';
+import 'package:first_application/features/authentication/domain/usecases/log_in_usecase.dart';
+import 'package:first_application/features/authentication/domain/usecases/log_out_usecase.dart';
+import 'package:first_application/features/authentication/domain/usecases/sign_up_usecase.dart';
 import 'package:first_application/features/product/data/data_sources/remote_data_source.dart';
 import 'package:first_application/features/product/domain/repositories/product_repository.dart';
 import 'package:first_application/features/product/domain/usecases/delete_product_usecase.dart';
@@ -19,7 +25,14 @@ import 'package:shared_preferences/shared_preferences.dart';
   GetAllProductUseCase,
   DeleteProductUseCase,
   UpdateProductUseCase,
-  InsertProductUseCase
+  InsertProductUseCase,
+  // auth
+  UserRepository,
+  UserRemoteDataSource,
+  LoginUseCase,
+  SignUpUseCase,
+  LogOutUseCase,
+  AuthLocalDataSource
 ], customMocks: [
   MockSpec<http.Client>(as: #MockHttpClient)
 ])
