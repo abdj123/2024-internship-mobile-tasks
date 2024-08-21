@@ -71,13 +71,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
         result.fold((failure) {
           emit(ErrorState(failure.message));
         }, (data) {
-          if (data) {
-            emit(const SuccessState('Product Deleted Successfuly'));
-          } else {
-            emit(const ErrorState('Error Occured'));
-          }
-
-          return data;
+          emit(const SuccessState('Product Deleted Successfuly'));
         });
       },
     );

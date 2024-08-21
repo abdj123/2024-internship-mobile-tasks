@@ -11,6 +11,7 @@ import 'package:first_application/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'features/product/domain/entities/product.dart';
 import 'features/product/presentation/screens/create_product.dart';
 
 void main() {
@@ -36,24 +37,43 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
+        onGenerateRoute: _generateRoute,
         initialRoute: "/",
-        routes: {
-          "/": (context) => const SplashScreen(),
-          "/detail_page": (context) => const DetailPage(),
-          "/home_page": (context) => const HomePage(),
-          "/create_product": (context) => const CreateProduct(),
-          "/update_product": (context) => const UpdateProduct(),
-          "/search_page": (context) => const SearchPage(),
-          "/register_page": (context) => const SignUpPage(),
-          "/login_page": (context) => const LoginPage(),
-        },
         title: 'Flutter Demo',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
       ),
-      // ],
     );
+  }
+
+  Route? _generateRoute(RouteSettings settings) {
+    switch (settings.name) {
+      case "/":
+        return MaterialPageRoute(builder: (_) => const SplashScreen());
+      case "/home_page":
+        return MaterialPageRoute(builder: (_) => const HomePage());
+      case "/create_product":
+        return MaterialPageRoute(builder: (_) => const CreateProduct());
+      case "/update_product":
+        return MaterialPageRoute(builder: (_) => const UpdateProduct());
+      case "/search_page":
+        return MaterialPageRoute(builder: (_) => const SearchPage());
+      case "/register_page":
+        return MaterialPageRoute(builder: (_) => const SignUpPage());
+      case "/login_page":
+        return MaterialPageRoute(builder: (_) => const LoginPage());
+      case "/detail_page":
+        final args = settings.arguments as ProductEntity?;
+        if (args != null) {
+          return MaterialPageRoute(
+            builder: (_) => DetailPage(productEntity: args),
+          );
+        }
+        return null;
+      default:
+        return null;
+    }
   }
 }

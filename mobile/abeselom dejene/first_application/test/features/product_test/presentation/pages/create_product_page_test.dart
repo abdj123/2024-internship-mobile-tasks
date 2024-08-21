@@ -1,38 +1,22 @@
-import 'dart:io';
-
-import 'package:first_application/features/product/domain/entities/product.dart';
+import 'package:bloc_test/bloc_test.dart';
 import 'package:first_application/features/product/presentation/bloc/product_bloc.dart';
 import 'package:first_application/features/product/presentation/screens/create_product.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 
-class MockProductBloc extends Mock implements ProductBloc {}
-
-class MockImagePicker extends Mock implements ImagePicker {}
+class MockProductBloc extends MockBloc<ProductEvent, ProductState>
+    implements ProductBloc {}
 
 void main() {
   late MockProductBloc mockProductBloc;
-  late MockImagePicker mockImagePicker;
 
-  const newProduct = ProductEntity(
-      id: "",
-      name: 'Test Product',
-      description: 'Test Product Description',
-      price: '1520',
-      imageUrl: 'path/to/fake/image.png');
+  setUp(() {
+    mockProductBloc = MockProductBloc();
+  });
 
-  setUp(
-    () {
-      mockProductBloc = MockProductBloc();
-      mockImagePicker = MockImagePicker();
-      HttpOverrides.global = null;
-    },
-  );
-
-  Future<void> pumpCreateProductScreen(WidgetTester tester) async {
+  Future<void> _pumpWidget(WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: BlocProvider<ProductBloc>.value(
@@ -43,59 +27,87 @@ void main() {
     );
   }
 
-  // Widget pumpCreateProductScreen(Widget body) {
-  //   return BlocProvider<ProductBloc>(
-  //     create: (context) => mockProductBloc,
-  //     child: MaterialApp(
-  //       home: body,
-  //     ),
-  //   );
-  // }
+  Future<void> _pumpUpdateWidget(WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: BlocProvider<ProductBloc>.value(
+          value: mockProductBloc,
+          child: const CreateProduct(),
+        ),
+      ),
+    );
+  }
 
-  testWidgets('this should test create product', (widgetTester) async {
-    //arange
-    await pumpCreateProductScreen(widgetTester);
+  testWidgets('shows success Snackbar on successful product creation',
+      (WidgetTester tester) async {
+    // Arrange
+    when(() => mockProductBloc.state).thenReturn(ProductInitial());
 
-    // await widgetTester
-    //     .pumpWidget(pumpCreateProductScreen(const CreateProduct()));
-    await widgetTester.pumpAndSettle(); // This ensures everything is rendered
+    await _pumpWidget(tester);
 
-    var textField = find.byType(TextField);
-    expect(textField, findsOneWidget);
+    expect(find.byKey(const Key('name_field')), findsOneWidget);
+  });
 
-    //act
+  //   hiii
+  testWidgets('shows error Snackbar on product creation failure',
+      (WidgetTester tester) async {
+    when(() => mockProductBloc.state).thenReturn(ProductInitial());
 
-    // await widgetTester.enterText(
-    //     find.byKey(const Key('name_field')), 'Test Product');
+    whenListen(
+      mockProductBloc,
+      Stream<ProductState>.fromIterable(
+          [const ErrorState('Failed to create product')]),
+    );
 
-    // await widgetTester.enterText(
-    //     find.byKey(const Key('category_field')), 'Test Catagory');
+    await _pumpWidget(tester);
 
-    // await widgetTester.enterText(find.byKey(const Key('price_field')), '1520');
+    await tester.ensureVisible(find.text('ADD'));
+    await tester.pumpAndSettle();
 
-    // await widgetTester.enterText(
-    //     find.byKey(const Key('description_field')), 'Test Product Description');
+    await tester.tap(find.byKey(const Key('image_picker')));
+    await tester.pumpAndSettle();
 
-    // final mockImageFile = File('path/to/fake/image.png');
-    // when(mockImagePicker.pickImage(source: ImageSource.gallery))
-    //     .thenAnswer((_) async => XFile(mockImageFile.path));
+    await tester.enterText(find.byKey(const Key('name_field')), 'Test Product');
+    await tester.enterText(
+        find.byKey(const Key('category_field')), 'Test Category');
+    await tester.enterText(find.byKey(const Key('price_field')), '50');
+    await tester.enterText(
+        find.byKey(const Key('description_field')), 'Test Description');
 
-    // await widgetTester.tap(find.byKey(const Key('image_picker')));
-    // await widgetTester.pump();
+    await tester.tap(find.text('ADD'));
+    await tester.pumpAndSettle();
 
-    //assert
+    expect(find.byKey(const Key('error_snackbar')), findsOneWidget);
+  });
 
-    // expect(find.byType(Image), findsOne);
+  testWidgets('shows success Snackbar on product creation',
+      (WidgetTester tester) async {
+    when(() => mockProductBloc.state).thenReturn(ProductInitial());
 
-    // await widgetTester.tap(find.text('ADD'));
-    // await widgetTester.pump();
+    whenListen(
+      mockProductBloc,
+      Stream<ProductState>.fromIterable(
+          [const SuccessState('Product Created!')]),
+    );
 
-    // verify(mockProductBloc.add(CreateProductEvent(newProduct))).called(1);
-    // // verify(mockProductBloc.add(any<CreateProductEvent>())).called(1);
+    await _pumpWidget(tester);
 
-    // when(mockProductBloc.state)
-    //     .thenReturn(const SuccessState("Product added successfully"));
+    await tester.ensureVisible(find.text('ADD'));
+    await tester.pumpAndSettle();
 
-    // expect(find.byType(SnackBar), findsOneWidget);
+    await tester.tap(find.byKey(const Key('image_picker')));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byKey(const Key('name_field')), 'Test Product');
+    await tester.enterText(
+        find.byKey(const Key('category_field')), 'Test Category');
+    await tester.enterText(find.byKey(const Key('price_field')), '50');
+    await tester.enterText(
+        find.byKey(const Key('description_field')), 'Test Description');
+
+    await tester.tap(find.text('ADD'));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('success_snackbar')), findsOneWidget);
   });
 }

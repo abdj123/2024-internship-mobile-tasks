@@ -133,7 +133,19 @@ class _CreateProductState extends State<CreateProduct> {
                   ),
                 ),
                 BlocConsumer<ProductBloc, ProductState>(
-                  listener: (context, state) {},
+                  listener: (context, state) {
+                    if (state is ErrorState) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          key: const Key('error_snackbar'),
+                          content: Text(state.message)));
+                    }
+
+                    if (state is SuccessState) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          key: const Key('success_snackbar'),
+                          content: Text(state.message)));
+                    }
+                  },
                   builder: (context, state) {
                     return Column(
                       children: [
@@ -145,6 +157,7 @@ class _CreateProductState extends State<CreateProduct> {
                                 !validatePrice(priceController.text)) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
+                                      key: Key('warning_snackbar'),
                                       content: Text(
                                           'Please Provide Required Fields')));
                             } else {
@@ -159,11 +172,6 @@ class _CreateProductState extends State<CreateProduct> {
                                   BlocProvider.of<ProductBloc>(context);
 
                               productBloc.add(CreateProductEvent(newProduct));
-
-                              if (state is SuccessState) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(state.message)));
-                              }
 
                               setState(() {
                                 selectedImage = null;
@@ -232,7 +240,6 @@ Text reusableText(String text, FontWeight wight, double size,
 Container reusabletextField(String hint, TextEditingController controller,
     {TextInputType? type, Key? key}) {
   return Container(
-    key: key,
     height: 50,
     padding: const EdgeInsets.symmetric(horizontal: 4),
     decoration: BoxDecoration(

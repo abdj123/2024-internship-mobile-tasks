@@ -46,6 +46,7 @@ class _HomePageState extends State<HomePage> {
           if (state is ErrorState) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
+                key: const Key('error_snackbar_home'),
                 content: Text(state.message),
               ),
             );
@@ -133,6 +134,7 @@ class _HomePageState extends State<HomePage> {
                     Expanded(
                         child: state is LoadedAllProductState
                             ? ListView.builder(
+                                key: const Key("products_list"),
                                 itemCount: state.allProducts.length,
                                 itemBuilder: (context, index) {
                                   final item = state.allProducts[index];

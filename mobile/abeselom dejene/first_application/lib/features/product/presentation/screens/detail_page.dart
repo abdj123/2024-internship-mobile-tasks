@@ -5,7 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/product_bloc.dart';
 
 class DetailPage extends StatefulWidget {
-  const DetailPage({super.key});
+  final ProductEntity productEntity;
+  const DetailPage({super.key, required this.productEntity});
 
   @override
   State<DetailPage> createState() => _DetailPageState();
@@ -16,7 +17,8 @@ class _DetailPageState extends State<DetailPage> {
   int selected = 0;
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as ProductEntity;
+    // final args = ModalRoute.of(context)!.settings.arguments as ProductEntity;
+    final args = widget.productEntity;
 
     return Scaffold(
       body: SafeArea(
@@ -120,15 +122,20 @@ class _DetailPageState extends State<DetailPage> {
                       listener: (context, state) {
                         if (state is SuccessState) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(state.message)),
+                            SnackBar(
+                                key: const Key("snackbar_deleted"),
+                                content: Text(state.message)),
                           );
                           Navigator.pop(context);
                           context
                               .read<ProductBloc>()
                               .add(LoadAllProductEvent());
-                        } else if (state is ErrorState) {
+                        }
+                        if (state is ErrorState) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(state.message)),
+                            SnackBar(
+                                key: const Key("snackbar_delet_error"),
+                                content: Text(state.message)),
                           );
                         }
                       },
