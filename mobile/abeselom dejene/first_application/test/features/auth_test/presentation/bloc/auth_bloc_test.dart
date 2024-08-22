@@ -63,7 +63,7 @@ void main() {
       'emits [AuthLoadingState, SuccessState] when SignUpEvent is added and sign up is successful',
       build: () {
         when(mockSignUpUseCase.execute(testUserEntity, testPassword))
-            .thenAnswer((_) async => Right(testUserEntity));
+            .thenAnswer((_) async => const Right(testUserEntity));
         return authBloc;
       },
       act: (bloc) => bloc.add(SignUpEvent(testUserEntity, testPassword)),

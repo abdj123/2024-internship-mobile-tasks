@@ -1,10 +1,14 @@
+import 'package:first_application/features/product/data/models/product_model.dart';
 import 'package:first_application/features/product/domain/entities/product.dart';
 
 import 'dart:io';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import 'package:bloc_test/bloc_test.dart';
 import 'package:first_application/features/product/presentation/bloc/product_bloc.dart';
 import 'package:first_application/features/product/presentation/screens/detail_page.dart';
+import 'package:first_application/features/product/presentation/screens/home_page.dart';
+import 'package:first_application/features/product/presentation/widgets/reusable_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -20,6 +24,15 @@ void main() {
     mockProductBloc = MockProductBloc();
     HttpOverrides.global = null;
   });
+
+  const testProductEntityList = [
+    ProductModel(
+        id: '1',
+        name: 'Test Pineapple',
+        description: 'A yellow pineapple for the summer',
+        imageUrl: 'https://picsum.photos/250?image=9',
+        price: 5.33)
+  ];
 
   const productEntity = ProductEntity(
     id: '1',
@@ -40,6 +53,41 @@ void main() {
     );
     await tester.pumpAndSettle();
   }
+
+  testWidgets('Navigates to DetailPage on tapping product',
+      (WidgetTester tester) async {
+    // Arrange
+    when(() => mockProductBloc.state).thenReturn(
+        const LoadedAllProductState(allProducts: testProductEntityList));
+
+    // Act
+    await tester.pumpWidget(
+      MultiBlocProvider(
+        providers: [
+          BlocProvider<ProductBloc>.value(value: mockProductBloc),
+        ],
+        child: MaterialApp(
+          initialRoute: '/',
+          routes: {
+            '/detail_page': (context) =>
+                const DetailPage(productEntity: productEntity),
+          },
+          home: const HomePage(),
+          builder: EasyLoading.init(),
+        ),
+      ),
+    );
+    await tester.tap(find.byType(ReusableCard));
+    await tester.pumpAndSettle();
+
+    // Assert
+    expect(find.text('Men’s shoe'), findsOneWidget);
+
+    await tester.tap(find.byIcon(Icons.arrow_back_ios_new));
+    await tester.pumpAndSettle();
+
+    expect(find.text("July 14, 2023"), findsOneWidget);
+  });
 
   testWidgets('check some text', (WidgetTester tester) async {
     // Arrange

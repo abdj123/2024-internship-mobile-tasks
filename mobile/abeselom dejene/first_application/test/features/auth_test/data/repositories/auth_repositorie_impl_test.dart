@@ -39,9 +39,9 @@ void main() {
       when(mockUserRemoteDataSource.loginUser(userEntity, 'test_password'))
           .thenAnswer((_) async => 'test_token');
       when(mockAuthLocalDataSource.cacheToken('test_token'))
-          .thenAnswer((_) async => null);
+          .thenAnswer((_) async {});
       when(mockAuthLocalDataSource.cacheLoginStatus(true))
-          .thenAnswer((_) async => null);
+          .thenAnswer((_) async {});
 
       // act
       final result =

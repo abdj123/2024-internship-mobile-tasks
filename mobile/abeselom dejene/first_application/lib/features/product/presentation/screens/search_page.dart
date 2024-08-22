@@ -251,7 +251,7 @@ class _SearchPageState extends State<SearchPage> {
                             )
                           : state is LoadingState
                               ? const Center(child: CircularProgressIndicator())
-                              : Container(
+                              : SizedBox(
                                   child: Center(
                                       child: reusableText("No Product Found",
                                           FontWeight.w700, 24)),
